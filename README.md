@@ -63,7 +63,7 @@ Parser and detector tests are plain PHPUnit (no database). The feature test runs
 ## Deployment (current box)
 
 - Code: `/var/www/transcripts` on the Vultr instance, nginx vhost `/etc/nginx/sites-available/transcripts`, TLS via certbot.
-- Deploy: sync code, then `php artisan migrate --force && php artisan config:cache route:cache view:cache`.
+- Deploy: `./deploy.sh` on the server (clears caches, runs tests, migrates, re-caches). Never run `php artisan test` while config is cached; the base TestCase refuses to, because cached config would point tests at the production database.
 - nginx `fastcgi_read_timeout` is 180 s because analysis runs inside the upload request.
 
 ## Known limits / next steps
