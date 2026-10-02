@@ -1,0 +1,197 @@
+WEBVTT
+
+1
+00:00:02.140 --> 00:00:07.920
+Dana Reyes: Okay, let's get started. Can everyone hear me? Give me a thumbs up in the chat.
+
+2
+00:00:08.300 --> 00:00:16.480
+Dana Reyes: Great. So today is week five, and we're picking up where we left off on hash tables. Last time we did chaining. Today is open addressing.
+
+3
+00:00:17.010 --> 00:00:22.650
+Marcus Lee: Sorry, before we start, is the problem set still due Friday or did that move?
+
+4
+00:00:23.100 --> 00:00:30.870
+Dana Reyes: Still Friday at midnight. Okay, quick warm-up. Who can remind us what happens with chaining when two keys hash to the same bucket?
+
+5
+00:00:34.200 --> 00:00:42.560
+Priya Patel: Um, you just keep a linked list at that bucket, so both keys live in the list, and lookup walks the list until it finds the key.
+
+6
+00:00:43.020 --> 00:00:47.310
+Dana Reyes: Exactly right. Thank you, Priya. And what does that cost us in the worst case?
+
+7
+00:00:49.880 --> 00:00:56.240
+Jordan's iPhone: Worst case is O of n, if everything lands in the same bucket.
+
+8
+00:00:56.700 --> 00:01:03.950
+Dana Reyes: Right. And who was that? I just see "Jordan's iPhone." Jordan, is that you?
+
+9
+00:01:04.400 --> 00:01:09.120
+Jordan's iPhone: Yeah, sorry, it's Jordan. My laptop died so I'm on my phone today.
+
+10
+00:01:09.600 --> 00:01:24.300
+Dana Reyes: No problem. Okay, so open addressing. The idea is there are no lists. Every key lives directly in the array. When you collide, you probe for another slot. The simplest version is linear probing: try the next slot, then the next, and wrap around.
+
+11
+00:01:25.010 --> 00:01:35.770
+Dana Reyes: So if I insert keys that hash to 3, 3, and 4, the first goes in slot 3, the second gets bumped to slot 4, and the third, which wanted 4, now goes to 5. Does that make sense?
+
+12
+00:01:38.900 --> 00:01:46.330
+Room 214 Zoom Room: So doesn't that mean the clusters just keep getting bigger? Like once you have a run of full slots, anything that lands in it makes it longer.
+
+13
+00:01:46.800 --> 00:01:58.420
+Dana Reyes: Yes! That's called primary clustering, and it's the big weakness of linear probing. Great observation. Who's in the room, by the way? I just see Room 214.
+
+14
+00:01:59.100 --> 00:02:05.660
+Room 214 Zoom Room: That was Aisha. There's three of us here, me, Tom, and Grace.
+
+15
+00:02:06.200 --> 00:02:14.880
+Dana Reyes: Okay, thanks Aisha. If you three can each say your name before you talk, that'll help me later when I go through the transcript.
+
+16
+00:02:15.400 --> 00:02:28.950
+Dana Reyes: So the fix for primary clustering is to probe further away. Quadratic probing tries slot h plus one, then h plus four, then h plus nine. Double hashing uses a second hash function to decide the step size.
+
+17
+00:02:29.500 --> 00:02:37.180
+Marcus Lee: With double hashing, does the second hash have to be relatively prime to the table size? I remember something like that from the reading.
+
+18
+00:02:37.700 --> 00:02:51.230
+Dana Reyes: Good memory, Marcus. Yes. If the step size shares a factor with the table size, you'll cycle through only part of the table and might never find an empty slot, even when one exists. That's why people often use a prime table size.
+
+19
+00:02:52.040 --> 00:03:00.610
+Priya Patel: So could you just make the table size a power of two and force the step to always be odd? Then they're always coprime.
+
+20
+00:03:01.100 --> 00:03:10.480
+Dana Reyes: Yes, that's a really common trick. Power of two tables let you replace mod with a bitmask, and an odd step is guaranteed to be coprime. Nice.
+
+21
+00:03:11.020 --> 00:03:15.900
+Priya Patel: Wait, so is that what Python does for dictionaries? Sam, didn't you look that up?
+
+22
+00:03:16.400 --> 00:03:28.770
+Priya Patel: Yeah, I read that Python uses a power of two table but it doesn't do plain linear probing. It mixes in the higher bits of the hash with this perturb thing so the probe sequence spreads out.
+
+23
+00:03:29.300 --> 00:03:37.120
+Dana Reyes: That's right, the perturb shift. That's a great example of a real system solving the clustering problem. Thanks, both of you. Are you two on the same computer?
+
+24
+00:03:37.600 --> 00:03:43.200
+Priya Patel: Yeah, sorry, it's Sam here, we're sharing a laptop today because mine's in the shop.
+
+25
+00:03:43.700 --> 00:03:47.300
+Dana Reyes: Totally fine. Just say your name first if you can.
+
+26
+00:03:48.000 --> 00:04:01.660
+Dana Reyes: Okay, now deletion. This is where open addressing gets tricky. If I just empty a slot, what breaks?
+
+27
+00:04:06.300 --> 00:04:15.820
+Jordan's iPhone: Lookups for keys after it break, because the probe would stop at the empty slot and think the key isn't there, even though it's further along.
+
+28
+00:04:16.300 --> 00:04:28.940
+Dana Reyes: Exactly. So instead we leave a tombstone, a special marker that says something used to be here, keep probing. Insert can reuse tombstones, but lookup has to skip past them.
+
+29
+00:04:29.500 --> 00:04:36.110
+Room 214 Zoom Room: This is Tom. Doesn't that mean the table fills up with tombstones over time and gets slow?
+
+30
+00:04:36.600 --> 00:04:49.760
+Dana Reyes: Yep. Which is why you rehash periodically. You count tombstones as part of the load factor, and when the load gets too high you rebuild the table and drop all the tombstones.
+
+31
+00:04:50.300 --> 00:04:57.540
+Marcus Lee: What's a good load factor to rehash at for open addressing? For chaining you said like one.
+
+32
+00:04:58.000 --> 00:05:11.390
+Dana Reyes: For open addressing you want to stay well below one, because performance falls off a cliff as the table fills. A lot of implementations rehash around 0.5 to 0.75. Python dicts use two thirds.
+
+33
+00:05:12.100 --> 00:05:20.330
+Grace Kim: Sorry I'm late, I had trouble with the room link so I joined from my own laptop. Did I miss the problem set announcement?
+
+34
+00:05:20.800 --> 00:05:25.400
+Dana Reyes: Still due Friday at midnight. Marcus asked the same thing. Welcome, Grace.
+
+35
+00:05:26.000 --> 00:05:39.670
+Dana Reyes: Alright, let's do a quick exercise. Table size seven, linear probing, hash is key mod seven. Insert 10, 17, 24, and 3. Where does each one go? Take a minute.
+
+36
+00:05:58.200 --> 00:06:08.930
+Marcus Lee: 10 mod 7 is 3, so slot 3. 17 mod 7 is also 3, so it goes to 4. 24 is 3 again, so 5. And 3 mod 7 is 3, so that goes all the way to 6.
+
+37
+00:06:09.400 --> 00:06:17.220
+Dana Reyes: Perfect. Four keys, all in one cluster. That's the clustering problem in miniature. Does anyone want to try the same thing with quadratic probing?
+
+38
+00:06:18.900 --> 00:06:23.400
+Priya Patel: I can try. Sam, do you want to do it?
+
+39
+00:06:23.900 --> 00:06:36.750
+Priya Patel: No, you go. Okay, so 10 goes to 3. 17 starts at 3, plus one is 4. 24 starts at 3, plus one is taken, plus four is 7, mod 7 is 0. And 3 tries 3, then 4, then 0, then plus nine is 12 mod 7 which is 5.
+
+40
+00:06:37.200 --> 00:06:46.880
+Dana Reyes: That's right, and notice the keys are spread out more: 3, 4, 0, 5 instead of 3, 4, 5, 6. That's the point.
+
+41
+00:06:47.500 --> 00:06:52.300
+Unknown caller: Hi, sorry, this is a phone dial-in, can you hear me?
+
+42
+00:06:52.900 --> 00:06:58.400
+Dana Reyes: We can hear you. Who is this?
+
+43
+00:06:58.900 --> 00:07:04.800
+Unknown caller: It's Leo, my internet is out, so I'm calling in. I'll just listen.
+
+44
+00:07:05.300 --> 00:07:17.950
+Dana Reyes: Okay, thanks Leo. So, wrapping up. For Friday's problem set, part three asks you to implement open addressing with tombstones and resizing. Start early, the deletion edge cases are where people lose points.
+
+45
+00:07:18.500 --> 00:07:26.330
+Grace Kim: For part three, are we allowed to use a fixed prime table size, or do we have to support growing it?
+
+46
+00:07:26.800 --> 00:07:33.900
+Dana Reyes: You have to support growing it. Double the size and round up to the next prime, or use powers of two with an odd step, either is fine.
+
+47
+00:07:34.500 --> 00:07:40.200
+Room 214 Zoom Room: Grace, it's Aisha, are you coming back to the room after?
+
+48
+00:07:40.700 --> 00:07:45.100
+Grace Kim: Yeah, I'll be there in five.
+
+49
+00:07:45.600 --> 00:07:53.700
+Dana Reyes: Great. Office hours are Thursday two to four. That's it for today. Thanks everyone, good discussion.
