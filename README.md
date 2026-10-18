@@ -75,6 +75,16 @@ Parser and detector tests are plain PHPUnit (no database). The feature test runs
 
 What each caller may consume (caps and windows) is in [PERMISSIONS.md](PERMISSIONS.md).
 
+**Verification run, 18 Oct 2026 (Stripe sandbox, live endpoint through Vercel):**
+
+| # | Sent | Response | Log line | `orders.paid_at` (order 1) |
+|---|---|---|---|---|
+| 1 | `stripe trigger checkout.session.completed` with `metadata.order_id=1` (event `evt_1URp7VEh0gYG3kQhC4ysObe5`) | 200 | `order 1 marked paid` | `NULL` → `2026-10-18 08:07:06` |
+| 2 | `stripe events resend` of the same event | 200 | `order 1 already paid` | unchanged, `08:07:06` |
+| 3 | Same event body signed with a wrong secret | 400 `Invalid signature` | `stripe.webhook.rejected: No signatures found matching…` | unchanged, `08:07:06` |
+
+Test order 1 belongs to a dedicated test account (`stripe-test@example.invalid`).
+
 ## Known limits / next steps
 
 - **Analysis is synchronous.** Fine for a class-sized transcript (≈5 s for 7 speakers); a 3-hour transcript with 40 speakers should move to a queued job.
