@@ -31,6 +31,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function transcripts(): HasMany
     {
         return $this->hasMany(Transcript::class);

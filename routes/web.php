@@ -2,8 +2,12 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\TranscriptController;
 use Illuminate\Support\Facades\Route;
+
+// Stripe calls this server-to-server; it is authenticated by the Stripe-Signature header, not a session.
+Route::post('/stripe/webhook', StripeWebhookController::class)->name('stripe.webhook');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');

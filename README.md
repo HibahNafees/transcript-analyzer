@@ -52,6 +52,7 @@ Without `FIRE_API_KEY` the app still parses, stores and counts; summaries are sk
 | `FIRE_BASE_URL` | `https://fire.prosaga.net` | |
 | `FIRE_TIMEOUT` | `60` | seconds per Fire call |
 | `INVITE_CODE` | — | code required to register; empty means registration is closed |
+| `STRIPE_WEBHOOK_SECRET` | — | `whsec_…` signing secret; empty means the webhook rejects everything |
 
 ## Tests
 
@@ -67,6 +68,12 @@ Parser and detector tests are plain PHPUnit (no database). The feature test runs
 - Transcripts uploaded before accounts existed have no owner and are hidden until `php artisan transcripts:claim you@example.com` assigns them.
 - Deploy: `./deploy.sh` on the server (clears caches, runs tests, migrates, re-caches). Never run `php artisan test` while config is cached; the base TestCase refuses to, because cached config would point tests at the production database.
 - nginx `fastcgi_read_timeout` is 180 s because analysis runs inside the upload request.
+
+## Payments (Stripe webhook, test mode)
+
+`POST /stripe/webhook` marks an `orders` row paid. It verifies the `Stripe-Signature` header with `STRIPE_WEBHOOK_SECRET`, reads `metadata.order_id` from a paid `checkout.session.completed` (or `…async_payment_succeeded`) event, and sets `paid_at` once with `UPDATE … WHERE paid_at IS NULL`. A bad or missing signature, a stale (>5 min) timestamp, or an unset secret gets a 400 and changes nothing. Every verified event gets a 200, even ones it ignores, so Stripe doesn't retry them forever. Each outcome is logged as `stripe.webhook` in `storage/logs/laravel.log`.
+
+What each caller may consume (caps and windows) is in [PERMISSIONS.md](PERMISSIONS.md).
 
 ## Known limits / next steps
 

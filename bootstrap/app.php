@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // limits. Only these hosts are accepted, so a spoofed host can't poison URLs.
         $middleware->trustProxies(at: '*');
         $middleware->trustHosts(at: ['hibah-transcripts.vercel.app', 'transcripts.66-135-1-187.sslip.io'], subdomains: false);
+
+        // Stripe can't send a CSRF token; the webhook verifies Stripe's signature instead.
+        $middleware->validateCsrfTokens(except: ['stripe/webhook']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

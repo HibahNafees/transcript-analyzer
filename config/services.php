@@ -35,6 +35,11 @@ return [
         'timeout' => env('FIRE_TIMEOUT', 60),
     ],
 
+    'stripe' => [
+        // whsec_… from the Stripe dashboard webhook endpoint (or `stripe listen`). Test mode only for now.
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
