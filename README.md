@@ -73,7 +73,7 @@ Parser and detector tests are plain PHPUnit (no database). The feature test runs
 
 `POST /stripe/webhook` marks an `orders` row paid. It verifies the `Stripe-Signature` header with `STRIPE_WEBHOOK_SECRET`, reads `metadata.order_id` from a paid `checkout.session.completed` (or `…async_payment_succeeded`) event, and sets `paid_at` once with `UPDATE … WHERE paid_at IS NULL`. A bad or missing signature, a stale (>5 min) timestamp, or an unset secret gets a 400 and changes nothing. Every verified event gets a 200, even ones it ignores, so Stripe doesn't retry them forever. Each outcome is logged as `stripe.webhook` in `storage/logs/laravel.log`.
 
-What each caller may consume (caps and windows) is in [PERMISSIONS.md](PERMISSIONS.md).
+What each caller may consume (caps and windows) is in [PERMISSIONS.md](PERMISSIONS.md). The webhook test run and permissions are also written up as a one-page PDF: [docs/stripe-webhook-and-permissions.pdf](docs/stripe-webhook-and-permissions.pdf).
 
 **Verification run, 18 Oct 2026 (Stripe sandbox, live endpoint through Vercel):**
 
