@@ -6,7 +6,7 @@ Upload a Zoom class transcript (`.vtt`) and get, per speaker:
 - a 2–3 sentence summary of what they said, and one thing they contributed (from Fire's `/v1/chat`)
 - flags on lines that look like **two people on one connection** (a shared laptop, a classroom Zoom Room)
 
-Live: https://transcripts.66-135-1-187.sslip.io · Sample input: [`public/sample-class.vtt`](public/sample-class.vtt)
+Live: https://hibah-transcripts.vercel.app (Vercel proxy in front of https://transcripts.66-135-1-187.sslip.io) · Sample input: [`public/sample-class.vtt`](public/sample-class.vtt)
 
 ## How it works
 

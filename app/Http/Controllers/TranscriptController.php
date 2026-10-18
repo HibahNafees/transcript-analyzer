@@ -24,8 +24,11 @@ class TranscriptController extends Controller
     public function store(Request $request, TranscriptImporter $importer, TranscriptAnalyzer $analyzer): RedirectResponse
     {
         $validated = $request->validate([
-            'transcript' => ['required', 'file', 'max:5120'],
+            // 4 MB: the Vercel proxy in front of the server rejects request bodies over ~4.5 MB.
+            'transcript' => ['required', 'file', 'max:4096'],
             'title' => ['nullable', 'string', 'max:200'],
+        ], [
+            'transcript.max' => 'The transcript may not be larger than 4 MB.',
         ]);
 
         $file = $validated['transcript'];

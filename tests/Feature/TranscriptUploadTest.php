@@ -78,4 +78,12 @@ class TranscriptUploadTest extends TestCase
 
         $this->assertSame(0, Transcript::count());
     }
+
+    public function test_rejects_transcript_over_4_mb(): void
+    {
+        $this->post('/transcripts', ['transcript' => UploadedFile::fake()->create('huge.vtt', 4097)])
+            ->assertSessionHasErrors(['transcript' => 'The transcript may not be larger than 4 MB.']);
+
+        $this->assertSame(0, Transcript::count());
+    }
 }
