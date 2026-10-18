@@ -9,14 +9,15 @@ use App\Services\TranscriptImporter;
 use App\Services\Vtt\VttParseException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class TranscriptController extends Controller
 {
-    public function index(FireClient $fire): View
+    public function index(Request $request, FireClient $fire): View
     {
         return view('transcripts.index', [
-            'transcripts' => Transcript::withCount('speakers')->latest()->limit(50)->get(),
+            'transcripts' => $request->user()->transcripts()->withCount('speakers')->latest()->limit(50)->get(),
             'fireConfigured' => $fire->isConfigured(),
         ]);
     }
@@ -37,7 +38,7 @@ class TranscriptController extends Controller
         }
 
         try {
-            $transcript = $importer->import($file->get(), $file->getClientOriginalName(), $validated['title'] ?? null);
+            $transcript = $importer->import($request->user(), $file->get(), $file->getClientOriginalName(), $validated['title'] ?? null);
         } catch (VttParseException $e) {
             return back()->withErrors(['transcript' => $e->getMessage()])->withInput();
         }
@@ -51,6 +52,8 @@ class TranscriptController extends Controller
 
     public function show(Transcript $transcript): View
     {
+        Gate::authorize('view', $transcript);
+
         $transcript->load([
             'speakers' => fn ($q) => $q->orderByDesc('word_count'),
             'utterances.speaker',
@@ -65,6 +68,8 @@ class TranscriptController extends Controller
 
     public function analyze(Transcript $transcript, TranscriptAnalyzer $analyzer): RedirectResponse
     {
+        Gate::authorize('analyze', $transcript);
+
         set_time_limit(180);
         $analyzer->analyze($transcript);
 

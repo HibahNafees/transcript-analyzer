@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Transcript;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
@@ -18,6 +19,7 @@ class TranscriptUploadTest extends TestCase
     {
         parent::setUp();
         config(['services.fire.key' => 'fire_sk_test', 'services.fire.base_url' => 'https://fire.test']);
+        $this->actingAs(User::factory()->create());
     }
 
     public function test_upload_parses_stores_and_summarizes_each_speaker(): void

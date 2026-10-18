@@ -29,7 +29,7 @@
     </div>
 
     @if ($transcripts->isNotEmpty())
-        <h2>Recent transcripts</h2>
+        <h2>Your transcripts</h2>
         <div class="card">
             <table>
                 <thead><tr><th>Title</th><th class="num">Speakers</th><th>Status</th></tr></thead>

@@ -36,7 +36,7 @@
         .notice.warn { background: var(--warn-soft); color: var(--warn); }
         .notice.err { background: var(--err-soft); color: var(--err); }
         form.upload { display: grid; gap: 12px; }
-        input[type=text], input[type=file] { width: 100%; font: inherit; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); }
+        input[type=text], input[type=email], input[type=password], input[type=file] { width: 100%; font: inherit; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); }
         button { font: inherit; font-weight: 600; padding: 10px 16px; border: 0; border-radius: 6px; background: var(--accent); color: var(--surface); cursor: pointer; justify-self: start; }
         button.secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 6px 12px; font-size: .9rem; }
         table { width: 100%; border-collapse: collapse; }
@@ -50,6 +50,10 @@
         .flag-reason { display: block; font-size: .8rem; color: var(--warn); margin-top: 2px; }
         .pill { display: inline-block; font-size: .75rem; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); white-space: nowrap; }
         .pill.failed, .pill.partial { background: var(--err-soft); color: var(--err); }
+        form.auth { display: grid; gap: 12px; max-width: 420px; }
+        .field-error { color: var(--err); font-size: .85rem; margin: 2px 0 0; }
+        .who-bar { display: flex; align-items: center; gap: 10px; }
+        .who-bar form { margin: 0; }
         details summary { cursor: pointer; font-weight: 600; margin: 24px 0 8px; }
         @media (max-width: 520px) { .line { grid-template-columns: 1fr; } h1 { font-size: 1.35rem; } }
     </style>
@@ -58,7 +62,17 @@
 <div class="wrap">
     <header class="site">
         <a href="{{ route('transcripts.index') }}">Transcript Analyzer</a>
-        <span class="muted small">Zoom .vtt → who said what</span>
+        @auth
+            <span class="who-bar small">
+                <span class="muted">{{ auth()->user()->name }}</span>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="secondary">Log out</button>
+                </form>
+            </span>
+        @else
+            <span class="muted small">Zoom .vtt → who said what</span>
+        @endauth
     </header>
     @yield('content')
 </div>

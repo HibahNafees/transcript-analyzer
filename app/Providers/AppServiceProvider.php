@@ -23,7 +23,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Uploads and re-analysis call Fire (costs money); cap them per visitor.
-        RateLimiter::for('fire', fn (Request $request) => Limit::perHour(20)->by($request->ip()));
+        // Uploads and re-analysis call Fire (costs money); cap them per account.
+        RateLimiter::for('fire', fn (Request $request) => Limit::perHour(20)->by('user:'.$request->user()->id));
+
+        // Slow down password guessing and invite-code guessing.
+        RateLimiter::for('auth', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Transcript;
+use App\Models\User;
 use App\Services\Vtt\Cue;
 use App\Services\Vtt\VttParser;
 use Illuminate\Support\Facades\DB;
@@ -20,13 +21,13 @@ class TranscriptImporter
     /**
      * @throws Vtt\VttParseException
      */
-    public function import(string $contents, string $filename, ?string $title = null): Transcript
+    public function import(User $owner, string $contents, string $filename, ?string $title = null): Transcript
     {
         $cues = $this->parser->parse($contents);
         $flags = $this->detector->detect($cues);
 
-        return DB::transaction(function () use ($cues, $flags, $filename, $title) {
-            $transcript = Transcript::create([
+        return DB::transaction(function () use ($owner, $cues, $flags, $filename, $title) {
+            $transcript = $owner->transcripts()->create([
                 'title' => filled($title) ? $title : pathinfo($filename, PATHINFO_FILENAME),
                 'original_filename' => $filename,
                 'status' => 'parsed',

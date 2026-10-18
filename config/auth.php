@@ -15,6 +15,18 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Invite Code
+    |--------------------------------------------------------------------------
+    |
+    | Registering an account requires this code. When it is empty, registration
+    | is closed and accounts can only be created from the server.
+    |
+    */
+
+    'invite_code' => env('INVITE_CODE'),
+
     'defaults' => [
         'guard' => env('AUTH_GUARD', 'web'),
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
